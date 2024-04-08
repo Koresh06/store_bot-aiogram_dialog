@@ -1,0 +1,8 @@
+/.venv
+/data.db
+/pyproject.toml
+/data.db
+/config
+admin_id
+myenv
+.ruff_cache
