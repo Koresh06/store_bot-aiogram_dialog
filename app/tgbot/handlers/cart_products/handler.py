@@ -92,3 +92,9 @@ async def cmd_menu_product(callback: CallbackQuery, callback_data: MenuProductsC
     value = data[callback_data.id]
     await callback.message.edit_media(media=InputMediaPhoto(media=value["image"]))
     await callback.message.edit_caption(caption=f"🍰 <b><i>Наименование:</i></b> {value['name']}  \n\n🔖   <b><i>Состав/описание торта:</i></b> {value['description']}\n\n💵 <b><i>Прайс:</i></b> {value['price']} RUB за кг.", reply_markup=await product_pagination(tg_id=callback.from_user.id, cat_id=callback_data.cat_id, id=value['id'], count=len(data)))
+
+
+@card_router.callback_query(F.startwith("quantuty"))
+async def show_quantity(callback: CallbackQuery):
+    quantity = callback.data.split('_')[-1]
+    await callback.answer(f'🎂 Торт {quantity} шт.')

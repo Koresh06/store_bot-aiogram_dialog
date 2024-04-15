@@ -18,7 +18,11 @@ async def product_pagination(tg_id: int, cat_id: int, id: int, count: int):
     builder.row(InlineKeyboardButton(text='« Назад', callback_data=cb2.pack()),
                 InlineKeyboardButton(text=f'{id}/{count}', callback_data=cb3.pack()),
                 InlineKeyboardButton(text='Вперед »', callback_data=cb4.pack()))
-    builder.row(InlineKeyboardButton(text='⬅️ Каталог', callback_data='category'))
+    builder.row(
+        InlineKeyboardButton(text='🛒 Корзина', callback_data='basket'),
+        InlineKeyboardButton(text='⬅️ Каталог', callback_data='category'),
+        width=1
+    )
     return builder.as_markup()
 
 
@@ -26,19 +30,23 @@ async def updated_pagination_product(cat_id: int, id: int, quantity: int, count:
     print(count)
     builder = InlineKeyboardBuilder()
     cb1 = QuantutyProductCbData(action=QuantityAction.minus, id=id, cat_id=cat_id, count=count, quantity=quantity)
-    cb2 = CountProductsCbData(value=count, cat_id=cat_id)
+    cb2 = CountProductsCbData(value=count, cat_id=cat_id, id=id)
     cb3 = QuantutyProductCbData(action=QuantityAction.plus, id=id, cat_id=cat_id, count=count, quantity=quantity)
     cb4 = PaginationProductCbData(action=PagitationAction.back, cat_id=cat_id, id=id)
     cb5 = PaginationProductCbData(action=PagitationAction.forward, cat_id=cat_id, id=id)
     builder.row(
         InlineKeyboardButton(text='🔽', callback_data=cb1.pack()),
-        InlineKeyboardButton(text=f'🛒 {quantity} шт.', callback_data=f"quantuty"),
+        InlineKeyboardButton(text=f'🛒 {quantity} шт.', callback_data=f"quantuty_{quantity}"),
         InlineKeyboardButton(text='🔼', callback_data=cb3.pack()),
         )
     builder.row(InlineKeyboardButton(text='« Назад', callback_data=cb4.pack()),
                 InlineKeyboardButton(text=f'{id}/{count}', callback_data=cb2.pack()),
                 InlineKeyboardButton(text='Вперед »', callback_data=cb5.pack()))
-    builder.row(InlineKeyboardButton(text='⬅️ Каталог', callback_data='category'))
+    builder.row(
+        InlineKeyboardButton(text='🛒 Корзина', callback_data='basket'),
+        InlineKeyboardButton(text='⬅️ Каталог', callback_data='category'),
+        width=1
+    )
         
     return builder.as_markup()
 

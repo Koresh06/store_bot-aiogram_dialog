@@ -48,3 +48,4 @@ class QuantutyProductCbData(CallbackData, prefix='quantuty-product'):
 class MenuProductsCbData(CallbackData, prefix='menu-products'):
     cat_id: int
     id: int
+
