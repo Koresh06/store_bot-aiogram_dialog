@@ -1,9 +1,12 @@
+from typing import List
 from dataclasses import dataclass
 
 
 @dataclass
 class BotConfig:
     token: str
+    admin_id: int
+
 
 @dataclass
 class DbConfig:
@@ -30,6 +33,7 @@ class DbConfig:
         else:
             raise ValueError("DB_TYPE not mysql, sqlite or postgres")
         return url
+
 
 @dataclass
 class Config:

@@ -5,13 +5,15 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram_dialog import setup_dialogs
-from app.config_loader import load_config
-from app.database.session import create_engine_db, create_sessionmaker
-from app.middlewares.db_session import DbSessionMiddleware
+from app.core.session import create_engine_db, create_sessionmaker
+from app.tgbot.middlewares.db_session import DbSessionMiddleware
 
-from app.handlers.users import user_router
-from app.handlers.admin import admin_router
-from app.dialogs.cake_dialog import add_categories_dialog, add_product
+from app.tgbot.dialogs import dialogs_list
+from app.tgbot.handlers import router_list
+
+from app.tgbot.filters.filter import Admin
+
+from .config_loader import settings
 
 
 logger = logging.getLogger(__name__)
@@ -25,33 +27,30 @@ async def main():
     )
     logger.info('Staring bot')
     
-    config = load_config()
-    engine = create_engine_db(config.db)
+    engine = create_engine_db(settings.db)
     sessionmaker = create_sessionmaker(engine)
     
 
     bot: Bot = Bot(
-        token=config.bot.token,
+        token=settings.bot.token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
     dp: Dispatcher = Dispatcher()
     dp.update.middleware(DbSessionMiddleware(sessionmaker=sessionmaker))
-    dp.include_routers(
-        user_router,
-        admin_router
-    )
-    dp.include_routers(
-        add_categories_dialog,
-        add_product
-    )
+    dp.update.filter(Admin())
+    dp.include_routers(*router_list)
+    dp.include_routers(*dialogs_list)
+
 
     setup_dialogs(dp)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
     
+
 if __name__ == '__main__':
     try:
         asyncio.run(main())
     except KeyboardInterrupt as exxit:
         logger.info(f'Бот закрыт: {exxit}')
+

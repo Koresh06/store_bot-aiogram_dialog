@@ -8,7 +8,10 @@ def load_config() -> Config:
     bot_config_data = config_data.get('bot', {})
     db_config_data = config_data.get('database', {})
     
-    bot_config = BotConfig(token=bot_config_data.get('token', ''))
+    bot_config = BotConfig(token=bot_config_data.get('token', ''), admin_id=bot_config_data.get('admin_id', ''))
     db_config = DbConfig(type=db_config_data.get('type', ''), path=db_config_data.get('path', ''), echo=db_config_data.get('echo', False))
 
     return Config(bot=bot_config, db=db_config)
+
+
+settings = load_config()
