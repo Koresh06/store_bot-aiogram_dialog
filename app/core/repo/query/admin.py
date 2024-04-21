@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from app.core.models.categories import Categories
 from app.core.models.product import Product
@@ -29,4 +29,5 @@ class AdminRepo(BaseRepo):
 
         product = Product(user_id=user_id, categories_id=categori_id, name=product["name"], image=product["photo"], description=product["description"], price=product["price"])
         self.session.add(product)
+        await self.session.execute(update(Categories).where(Categories.id == categori_id).values(count=Categories.count + 1))
         

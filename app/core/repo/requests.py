@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.repo.query.cart_product import CartProductRepo
+from app.core.repo.query.order_payment import OrderPaymentRepo
 
 from app.core.repo.query.user import UserRepo
 from app.core.repo.query.admin import AdminRepo
@@ -36,4 +37,9 @@ class RequestsRepo:
     def basket(self) -> BasketUserRepo: 
         
         return BasketUserRepo(self.session)
+    
+    @property
+    def order_payment(self) -> OrderPaymentRepo:
+
+        return OrderPaymentRepo(self.session)
    

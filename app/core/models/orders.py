@@ -20,6 +20,7 @@ class Orders(Base):
     data_time: Mapped[str] = mapped_column()
     order: Mapped[dict] = mapped_column(JSON())
     price: Mapped[float] = mapped_column(Float())
+    method: Mapped[str] = mapped_column(String(32))
     status: Mapped[bool] = mapped_column(default=False)
 
     user_rel: Mapped['User'] = relationship(back_populates='order_rel')

@@ -12,11 +12,14 @@ card_router = Router()
 
 @card_router.callback_query(CategoryCbData.filter())
 async def cart_product_one(callback: CallbackQuery, callback_data: CategoryCbData, repo: RequestsRepo) -> None:
-    await callback.message.delete()
-    data: dict = await repo.cart_product.get_params_product(callback_data.id)
-    item = data[callback_data.id]
-    await callback.message.answer_photo(item['image'], caption=f"🍰 <b><i>Наименование:</i></b> {item['name']}  \n\n🔖   <b><i>Состав/описание торта:</i></b> {item['description']}\n\n💵 <b><i>Прайс:</i></b> {item['price']} RUB за кг.", reply_markup= await product_pagination(tg_id=callback.from_user.id, cat_id=callback_data.id, id=item['id'], count=len(data)))
-    await callback.answer()
+    if not callback_data.count == 0:
+        await callback.message.delete()
+        data: dict = await repo.cart_product.get_params_product(callback_data.id)
+        item = data[callback_data.id]
+        await callback.message.answer_photo(item['image'], caption=f"🍰 <b><i>Наименование:</i></b> {item['name']}  \n\n🔖      <b><i>Состав/описание торта:</i></b> {item['description']}\n\n💵 <b><i>Прайс:</i></b> {item['price']} RUB за кг.",     reply_markup= await product_pagination(tg_id=callback.from_user.id, cat_id=callback_data.id, id=item['id'], count=len(data)))
+        await callback.answer()
+    else:
+        await callback.answer("Данная категория пока не содержит продуктов")
 
 
 @card_router.callback_query(PaginationProductCbData.filter(F.action == PagitationAction.back))

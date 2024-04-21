@@ -18,7 +18,7 @@ async def bascket_user_menu(tg_id: int, data: dict):
         InlineKeyboardButton(text='❎ Очистить корзину', callback_data=cb1.pack()),
         InlineKeyboardButton(text='🚕 Оформить заказ', callback_data='order'),
         InlineKeyboardButton(text='⬅️ Главное меню', callback_data='menu'),
-        width=2
+        width=2,
     )
 
     return builder.as_markup()

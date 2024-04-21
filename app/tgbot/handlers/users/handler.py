@@ -50,13 +50,14 @@ async def register_phone(message: Message, repo: RequestsRepo, state: FSMContext
     await repo.session.commit()
 
 
+@user_router.callback_query(F.data == 'main_menu')
 @user_router.callback_query(F.data == 'main')
 async def cmd_main(callback: CallbackQuery):
     await callback.message.edit_text('Магазин бот изготовлению тортов на заказ, выберете пункт меню или воспользуйтесь командой /help', reply_markup=await menu())
 
 
-@user_router.callback_query(F.data == 'category')
 @user_router.callback_query(F.data == 'menu')
+@user_router.callback_query(F.data == 'category')
 async def cmd_menu(callback: CallbackQuery, repo: RequestsRepo) -> None:
     await callback.message.delete()
     name_categories = await repo.users.get_categories_name()
