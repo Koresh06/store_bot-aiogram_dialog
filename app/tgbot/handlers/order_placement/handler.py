@@ -1,9 +1,10 @@
 import datetime
-from aiogram import F, Router
+from aiogram import F, Router ,Bot
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 
+from app.config_loader import settings
 from app.core.repo.requests import RequestsRepo
 from app.tgbot.fsm.state import OrderPlacement
 from .inline_kb import *
@@ -52,17 +53,20 @@ async def process_day_callback(callback: CallbackQuery, callback_data: DayCalend
 
 
 @order_placement.callback_query(MethodPaymantCbData.filter(), StateFilter(OrderPlacement.method))
-async def process_method_callback(callback: CallbackQuery, callback_data: MethodPaymantCbData, state: FSMContext, repo: RequestsRepo):
+async def process_method_callback(callback: CallbackQuery, callback_data: MethodPaymantCbData, state: FSMContext, repo: RequestsRepo, bot: Bot):
     await state.update_data(method=callback_data.method)
     if callback_data.method == "card":
         await callback.answer(f'Оплата картой. Находиться в разработке!')
     else:
         data = await state.get_data()
         products = await repo.order_payment.get_products_in_cart(tg_id=callback.from_user.id)
-        res = await repo.order_payment.create_order(tg_id=callback.from_user.id, data=data, products=products)
-        if res:
+        price_order = sum([value["price"] * value["quantity"] for key, value in products.items()])
+        order_id = await repo.order_payment.create_order(tg_id=callback.from_user.id, data=data, products=products, price_order=price_order)
+        content = "\n".join([f'{value["description"]}: {value["quantity"]} шт.' for _, value in products.items()])
+        if order_id:
             await repo.session.commit()
             await callback.message.delete()
+            await bot.send_message(chat_id=settings.bot.admin_id, text=f'Новый заказ №{order_id} от {callback.from_user.first_name}\n\nДата готовности: {data["date"]}\n\nПозиции: {content}\n\n💸 ОБЩАЯ СТОИМОСТЬ: {price_order} RUB\n\n♻️ СТАТУС ОПЛАТЫ: ❌', reply_markup=await ordering_solution(id=order_id, tg_id=callback.from_user.id))
             await callback.message.answer("Ваш заказ успешно оформлен, ожидайте подтверждение администратора!\n\nГлавное меню - /start")
         else:
             await callback.message.answer("Произошла ошибка при оформлении заказа!\n\nГлавное меню - /start")

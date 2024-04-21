@@ -3,6 +3,7 @@ from typing import Optional
 from sqlalchemy import select, update
 
 from app.core.models.categories import Categories
+from app.core.models.orders import Orders
 from app.core.models.product import Product
 from app.core.models.user import User
 from app.core.repo.base import BaseRepo
@@ -31,3 +32,12 @@ class AdminRepo(BaseRepo):
         self.session.add(product)
         await self.session.execute(update(Categories).where(Categories.id == categori_id).values(count=Categories.count + 1))
         
+
+    async def accept_status_order_user(self, id: int):
+        await self.session.execute(update(Orders).where(Orders.id == id).values(status=True))
+        return True
+
+    async def reject_status_order_user(self, id: int):
+        stmt = await self.session.scalar(select(Orders).where(Orders.id == id))
+        await self.session.delete(stmt)
+        return True

@@ -16,3 +16,14 @@ class DayCalendarCbData(CallbackData, prefix="day"):
 
 class MethodPaymantCbData(CallbackData, prefix="method"):
     method: str
+
+
+class ActionsSolutionCbData(IntEnum):
+    ACCEPT = auto()
+    REJECT = auto()
+
+
+class OrderingSolutionCbDate(CallbackData, prefix="solution"):
+    action: ActionsSolutionCbData
+    id: int
+    tg_id: int

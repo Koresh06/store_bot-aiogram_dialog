@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 
 from sqlalchemy import delete, select, update
@@ -34,17 +35,17 @@ class OrderPaymentRepo(BaseRepo):
         return False
     
 
-    async def create_order(self, tg_id: int, data: dict, products: dict):
+    async def create_order(self, tg_id: int, data: dict, products: dict, price_order: float):
         user_d = await self.session.scalar(select(User).where(User.tg_id == tg_id))
         cart_d = await self.session.scalar(select(Cart).where(Cart.id == user_d.id))
-        print(data["date"], data["method"])
 
-        price_order = sum([value["price"] * value["quantity"] for key, value in products.items()])
 
-        self.session.add(Orders(user_id=user_d.id, cart_id=cart_d.id, data_time=data["date"], order=products, price=price_order, method=data["method"]))
+        order = Orders(user_id=user_d.id, cart_id=cart_d.id, data_time=data["date"], order=products, price=price_order, method=data     ["method"])
+        self.session.add(order)
+        await self.session.commit()
 
         cartitem_d = await self.session.scalars(select(CartItem).where(CartItem.cart_id == cart_d.id))
         for item in cartitem_d:
             await self.session.delete(item)
 
-        return True
+        return order.id

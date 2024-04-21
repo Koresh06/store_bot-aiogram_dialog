@@ -58,3 +58,14 @@ async def method_paymant():
     )
     builder.adjust(1)
     return builder.as_markup()
+
+
+async def ordering_solution(id, tg_id):
+    builder = InlineKeyboardBuilder()
+
+    cb1 = OrderingSolutionCbDate(action=ActionsSolutionCbData.ACCEPT, id=id, tg_id=tg_id)
+    cb2 = OrderingSolutionCbDate(action=ActionsSolutionCbData.REJECT, id=id, tg_id=tg_id)
+    builder.add(InlineKeyboardButton(text='Принять заказ', callback_data=cb1.pack()))
+    builder.add(InlineKeyboardButton(text='Отклонить', callback_data=cb2.pack()))
+
+    return builder.as_markup()
