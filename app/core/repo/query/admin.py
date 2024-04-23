@@ -37,6 +37,7 @@ class AdminRepo(BaseRepo):
         await self.session.execute(update(Orders).where(Orders.id == id).values(status=True))
         return True
 
+
     async def reject_status_order_user(self, id: int):
         stmt = await self.session.scalar(select(Orders).where(Orders.id == id))
         await self.session.delete(stmt)

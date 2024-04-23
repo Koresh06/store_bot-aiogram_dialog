@@ -49,3 +49,21 @@ class OrderPaymentRepo(BaseRepo):
             await self.session.delete(item)
 
         return order.id
+
+
+    async def get_order_user(self, id: int):
+        order = await self.session.scalar(select(Orders).where(Orders.id == id))
+        if order:
+            return order
+        return False
+
+    async def update_status_order(self, tg_id: int, id: int):
+        await self.session.execute(update(Orders).where(Orders.id == id).values(status=True))
+        
+        user_d = await self.session.scalar(select(User).where(User.tg_id == tg_id))
+        cart_d = await self.session.scalar(select(Cart).where(Cart.id == user_d.id))
+        cartitem_d = await self.session.scalars(select(CartItem).where(CartItem.cart_id == cart_d.id))
+        for item in cartitem_d:
+            await self.session.delete(item)
+
+

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 class BotConfig:
     token: str
     admin_id: int
+    token_yookassa: str
 
 
 @dataclass
