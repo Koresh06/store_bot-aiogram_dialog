@@ -8,3 +8,8 @@ class RegisterUser(StatesGroup):
 class OrderPlacement(StatesGroup):
     date = State()
     method = State()
+
+
+class Feetback(StatesGroup):
+    text = State()
+    confirm = State()

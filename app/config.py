@@ -7,6 +7,8 @@ class BotConfig:
     token: str
     admin_id: int
     token_yookassa: str
+    channel_id: str
+    channel_url: str
 
 
 @dataclass

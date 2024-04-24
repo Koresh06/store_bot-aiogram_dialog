@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Bot, Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Command, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -6,7 +6,7 @@ from aiogram.fsm.state import default_state
 # from aiogram_dialog import DialogManager, StartMode
 
 from app.core.repo.requests import RequestsRepo
-from app.tgbot.fsm.state import RegisterUser
+from app.tgbot.fsm.state import Feetback, RegisterUser
 from app.tgbot.handlers.users.inline_kb import *
 from app.tgbot.handlers.users.filter_kb import *
 from app.config_loader import settings
@@ -26,7 +26,7 @@ async def process_cancel_command(message: Message):
 @user_router.message(Command(commands='cancel'), ~StateFilter(default_state))
 async def process_cancel_command_state(message: Message, state: FSMContext):
     await message.answer(
-        text='Отмена заполнения формы\n\nПри необходимости заполните форму заново'
+        text='Отмена действия!'
     )
     await state.clear()
 
@@ -69,6 +69,42 @@ async def user_profile(callback: CallbackQuery, repo: RequestsRepo):
     count = await repo.users.get_orders_count_user(callback.from_user.id)
     await callback.message.edit_text(f'┌📰 Ваш Профиль\n├Имя: <code>{callback.from_user.first_name}</code>\n├ID: <code>{callback.from_user.id}</code>\n├Телефон: <code>{user.phone}</code>\n└Количество заказов: <code>{count} шт.</code>', reply_markup=back_menu)
     await repo.session.commit()
+
+
+@user_router.callback_query(F.data == "feedback")
+async def process_feedback(callback: CallbackQuery):
+    await callback.message.edit_text("Отзывы размещаются в нашем телеграмм кананале🔽", reply_markup=await feedback_kb())
+
+
+@user_router.callback_query(F.data == "feedback_user")
+async def start_state_feedback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.delete()
+    await callback.message.answer("Напишите ваш отзыв. \n\nВАЖНО!!! отзыв может быть только текстом:\n\n❌ Отмена - /cancel")
+    await state.set_state(Feetback.text)
+    await callback.answer()
+
+
+@user_router.message(StateFilter(Feetback.text))
+async def cmd_register_text(message: Message, state: FSMContext):
+    await state.update_data(text=message.text)
+    await message.answer(text=f"Подтвердите ваш отзыв\n\n<i>{message.text}</i>", reply_markup=await confirm_feetback(message.from_user.id, message.message_id))
+    await state.set_state(Feetback.confirm)
+
+
+@user_router.callback_query(ConfirFeetback.filter(), StateFilter(Feetback.confirm))
+async def cmd_confirm(callback: CallbackQuery, state: FSMContext, bot: Bot, callback_data: ConfirFeetback):
+    confirm = callback_data.action
+    tg_id = callback_data.tg_id
+    message_id = callback_data.message_id
+    data = await state.get_data()
+    await callback.message.delete()
+    if confirm == 1:
+        await bot.send_message(chat_id=tg_id, text="Спасибо за ваш отзыв!\n\nВаш отзыв отправлен на модерацию, в ближайшее время он будет опубликован!", reply_markup=await menu())
+        await bot.send_message(chat_id=settings.bot.admin_id, text=f"Новый отзыв от {callback.from_user.first_name}:\n\n{data['text']}", reply_markup=await admin_confirm_feetback(tg_id, message_id))
+    else:
+        await callback.message.answer("Отзыв отклонен!", reply_markup=await menu())
+    await state.clear()
+    await callback.answer()
 
 
 @user_router.message(Command(commands='help'))

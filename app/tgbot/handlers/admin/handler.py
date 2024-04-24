@@ -4,9 +4,12 @@ from aiogram.filters import Command
 from aiogram_dialog import DialogManager, StartMode
 from app.tgbot.dialogs.admin import state
 
+from app.config_loader import settings
 from app.core.repo.requests import RequestsRepo
 from app.tgbot.handlers.admin.inline_kb import *
 from app.tgbot.handlers.order_placement.filter_kb import ActionsSolutionCbData, OrderingSolutionCbDate
+from app.tgbot.handlers.users.filter_kb import AdminConfirmFeetback
+from app.tgbot.handlers.users.inline_kb import menu
 
 
 admin_router = Router()
@@ -34,3 +37,17 @@ async def ordering_solution(callback: CallbackQuery, callback_data: OrderingSolu
             await callback.message.delete()
             await bot.send_message(chat_id=callback_data.tg_id, text=f"Ваш заказ № {callback_data.id} отклонен!")
     await repo.session.commit()
+
+
+@admin_router.callback_query(AdminConfirmFeetback.filter())
+async def cmd_admin_confirme(callback: CallbackQuery, bot: Bot, callback_data: AdminConfirmFeetback):
+    confirm = callback_data.action
+    tg_id = callback_data.tg_id
+    message_id = callback_data.message_id
+    if confirm == 1:
+        await bot.forward_message(chat_id=settings.bot.channel_id, from_chat_id=tg_id, message_id=message_id)
+        await callback.answer('Отзыв подтвержден!', show_alert=True)
+    else:
+        await callback.answer('Отзыв отклонен!', show_alert=True, reply_markup=await menu())
+        await callback.answer()
+    await callback.message.delete()
