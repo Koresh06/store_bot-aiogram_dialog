@@ -12,7 +12,7 @@ async def menu() -> InlineKeyboardBuilder:
     builder = InlineKeyboardBuilder()
 
     builder.row(
-        InlineKeyboardButton(text='📋 Меню', callback_data='menu'),
+        InlineKeyboardButton(text='📋 Меню', callback_data='category'),
         InlineKeyboardButton(text='🛒 Корзина', callback_data='basket'),
         InlineKeyboardButton(text='📰 Мой Профиль', callback_data='profile'),
         InlineKeyboardButton(text='📍 Мои заказы', callback_data='orders'),
@@ -36,12 +36,18 @@ async def categories_menu(data: list[Categories]):
     for item in data:
         builder.row(InlineKeyboardButton(text=item.name, callback_data=CategoryCbData(id=item.id, count=item.count).pack()))
     builder.adjust(1)
-    builder.row(InlineKeyboardButton(text='⬅️ Назад', callback_data='main'))
+    builder.row(InlineKeyboardButton(text='⬅️ Назад', callback_data='menu'))
     return builder.as_markup()
 
 
 kb_help = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text='Администратор', url=f'{settings.bot.admin_id}')]
+    ]
+)
+
+back_menu = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text='⬅️ Назад', callback_data='menu')]
     ]
 )

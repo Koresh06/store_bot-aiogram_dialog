@@ -8,6 +8,7 @@ from aiogram.fsm.state import default_state
 from app.core.repo.requests import RequestsRepo
 from app.tgbot.fsm.state import RegisterUser
 from app.tgbot.handlers.users.inline_kb import *
+from app.tgbot.handlers.users.filter_kb import *
 from app.config_loader import settings
 
 # from app.tgbot.dialogs.user.state import Catalog
@@ -50,13 +51,11 @@ async def register_phone(message: Message, repo: RequestsRepo, state: FSMContext
     await repo.session.commit()
 
 
-@user_router.callback_query(F.data == 'main_menu')
-@user_router.callback_query(F.data == 'main')
+@user_router.callback_query(F.data == 'menu')
 async def cmd_main(callback: CallbackQuery):
     await callback.message.edit_text('Магазин бот изготовлению тортов на заказ, выберете пункт меню или воспользуйтесь командой /help', reply_markup=await menu())
 
 
-@user_router.callback_query(F.data == 'menu')
 @user_router.callback_query(F.data == 'category')
 async def cmd_menu(callback: CallbackQuery, repo: RequestsRepo) -> None:
     await callback.message.delete()
@@ -64,12 +63,15 @@ async def cmd_menu(callback: CallbackQuery, repo: RequestsRepo) -> None:
     await callback.message.answer("Категории товаров", reply_markup=await categories_menu(name_categories))
 
 
-@user_router.message(F.text.endswith('Мой Профиль'))
-async def user_profile(message: CallbackQuery, repo: RequestsRepo):
-    phone = await repo.users.show_phone(message.from_user.id)
-    await message.answer(f'┌📰 Ваш Профиль\n├Имя: <code>{message.from_user.first_name}</code>\n├ID: <code>{message.from_user.id}</code>\n├Телефон: <code>{phone}</code>\n└Количество заказов: <code>0 шт.</code>')
+@user_router.callback_query(F.data == 'profile')
+async def user_profile(callback: CallbackQuery, repo: RequestsRepo):
+    user = await repo.users.show_phone(callback.from_user.id)
+    count = await repo.users.get_orders_count_user(callback.from_user.id)
+    await callback.message.edit_text(f'┌📰 Ваш Профиль\n├Имя: <code>{callback.from_user.first_name}</code>\n├ID: <code>{callback.from_user.id}</code>\n├Телефон: <code>{user.phone}</code>\n└Количество заказов: <code>{count} шт.</code>', reply_markup=back_menu)
+    await repo.session.commit()
 
 
-@user_router.message(F.text.endswith('Помощь'))
+@user_router.message(Command(commands='help'))
 async def cmd_help(message: Message):
+    await message.delete()
     await message.answer('🔸У вас возникли вопросы?\nМы с удовольствием ответим!\n', reply_markup=kb_help)

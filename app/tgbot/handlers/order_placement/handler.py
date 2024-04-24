@@ -83,29 +83,45 @@ async def process_method_callback(callback: CallbackQuery, callback_data: Method
         )
     else:
         if order_id:
-            await callback.message.delete()
+            await repo.order_payment.delete_basket_product_user(tg_id=callback.from_user.id)
             await bot.send_message(chat_id=settings.bot.admin_id, text=f'Новый заказ №{order_id} от {callback.from_user.first_name}\n\nДата готовности: {data["date"]}\n\nПозиции: {content}\n\n💸 ОБЩАЯ СТОИМОСТЬ: {price_order} RUB\n\n♻️ СТАТУС ОПЛАТЫ: ❌', reply_markup=await ordering_solution(id=order_id, tg_id=callback.from_user.id))
             await callback.message.answer("✅ Ваш заказ успешно оформлен, ожидайте подтверждение администратора!", reply_markup= await menu())
         else:
             await callback.message.answer("Произошла ошибка при оформлении заказа!\n\nГлавное меню - /start")
+    await state.clear()
     await callback.answer()
+    await repo.session.commit()
+
 
 @order_placement.pre_checkout_query()
 async def process_pre_checkout_query(pre_checkout: types.PreCheckoutQuery, bot: Bot):
     await bot.answer_pre_checkout_query(pre_checkout.id, ok=True)
-    print("OKEY")
 
 
 @order_placement.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
 async def process_pay(message: Message, bot: Bot, repo: RequestsRepo):
-    await message.answer("Спасибо за оплату! Ваш заказ успешно оплачен.")
     if message.successful_payment.invoice_payload.split('_')[0] == 'month':
         id = message.successful_payment.invoice_payload.split('_')[-1]
         await repo.order_payment.update_status_order(tg_id=message.from_user.id, id=id)
         order = await repo.order_payment.get_order_user(id=id)
         content = "\n".join([f'{value["description"]}: {value["quantity"]} шт.' for _, value in order.order.items()])
         await bot.send_message(chat_id=settings.bot.admin_id, text=f'Новый заказ №{id} от {message.from_user.first_name}\n\nДата готовности: {order.data_time}\n\nПозиции: {content}\n\n💸 ОБЩАЯ СТОИМОСТЬ: {order.price} RUB\n\n♻️ СТАТУС ОПЛАТЫ: ✅', reply_markup=await ordering_solution(id=id, tg_id=message.from_user.id))
-        await message.answer("✅ Ваш заказ успешно оформлен, ожидайте подтверждение администратора!", reply_markup= await menu())
+        await message.answer("✅ Ваш заказ успешно оформлен и оплачен, ожидайте подтверждение администратора!", reply_markup= await menu())
         await repo.session.commit()
+
+
+@order_placement.callback_query(OrderingSolutionCbDate.filter(F.action == ActionsSolutionCbData.ACCEPT))
+async def accept_callback(callback: CallbackQuery, callback_data: OrderingSolutionCbDate, bot: Bot):
+    await callback.message.delete()
+    await bot.send_message(chat_id=callback_data.tg_id, text=f"✅ Заказ #{callback_data.id} принят.\nПо готовности с вами свяжется администратор\n\nГлавное меню - /start")
+
+
+@order_placement.callback_query(OrderingSolutionCbDate.filter(F.action == ActionsSolutionCbData.REJECT))
+async def reject_callback(callback: CallbackQuery, callback_data: OrderingSolutionCbDate, bot: Bot, repo: RequestsRepo):
+    await callback.message.delete()
+    await repo.order_payment.delete_order(id=callback_data.id)
+    await repo.session.commit()
+    await bot.send_message(chat_id=callback_data.tg_id, text=f"❌ Заказ #{callback_data.id} отклонен.\n\nГлавное меню - /start")
+
 
 

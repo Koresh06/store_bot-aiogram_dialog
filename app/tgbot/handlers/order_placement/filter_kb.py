@@ -19,8 +19,8 @@ class MethodPaymantCbData(CallbackData, prefix="method"):
 
 
 class ActionsSolutionCbData(IntEnum):
-    ACCEPT = auto()
-    REJECT = auto()
+    ACCEPT = auto() #принять заказ
+    REJECT = auto() #отклонить заказ
 
 
 class OrderingSolutionCbDate(CallbackData, prefix="solution"):
