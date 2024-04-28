@@ -15,6 +15,12 @@ from app.tgbot.handlers.users.inline_kb import menu
 admin_router = Router()
 
 
+@admin_router.message(Command('addmin'))
+async def panel_addmin(message: Message) -> None:
+    await message.answer(f"Панель администратора\n\n http://127.0.0.1:8000/admin")
+    
+
+
 @admin_router.message(Command('admin'))
 async def panel_admin(message: Message) -> None:
     await message.answer('Панель администратора', reply_markup=await admin_menu())

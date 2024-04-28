@@ -1,5 +1,7 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+
+from app.config_loader import settings
 
 
 async def admin_menu() -> InlineKeyboardBuilder:
@@ -14,3 +16,9 @@ async def admin_menu() -> InlineKeyboardBuilder:
     )
 
     return builder.adjust(2).as_markup()
+
+
+def inline_builder():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="Admin Panel", web_app=WebAppInfo(url=settings.bot.WEBHOOK_URL))
+    return builder.as_markup()

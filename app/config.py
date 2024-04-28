@@ -9,6 +9,7 @@ class BotConfig:
     token_yookassa: str
     channel_id: str
     channel_url: str
+    WEBHOOK_URL: str
 
 
 @dataclass

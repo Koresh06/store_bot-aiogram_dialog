@@ -27,7 +27,8 @@ class CartProductRepo(BaseRepo):
 
     async def add_cart_user_product(self, tg_id: int, id: int) -> CartItem:
         user = await self.session.scalar(select(User).where(User.tg_id == tg_id))
-        cart_d = await self.session.scalar(select(Cart).where(Cart.user_id == user.id))
+        cart_d = await self.session.scalar(select(Cart).where(Cart.user_id == tg_id))
+        print(cart_d)
         check_cartitem = await self.session.scalar(select(CartItem).where(CartItem.cart_id == cart_d.id, CartItem.product_id == id))
         if not check_cartitem:
             self.session.add(CartItem(cart_id=cart_d.id, product_id=id))

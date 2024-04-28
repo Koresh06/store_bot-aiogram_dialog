@@ -21,5 +21,5 @@ class Categories(Base):
     def __repr__(self) -> str:
        return f"Categories(id={self.id!r}, name={self.name!r}, count={self.count!r})"
     
-    def __str__(self) -> str:
-        return str(self)
+    # def __str__(self) -> str:
+    #     return str(self)

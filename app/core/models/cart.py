@@ -26,5 +26,5 @@ class Cart(Base):
     def __repr__(self) -> str:
        return f"Cart(id={self.id!r}, user_id={self.user_id!r})"
     
-    def __str__(self) -> str:
-        return str(self)
+    # def __str__(self) -> str:
+    #     return str(self)
