@@ -61,7 +61,7 @@ async def process_method_callback(callback: CallbackQuery, callback_data: Method
     products = await repo.order_payment.get_products_in_cart(tg_id=callback.from_user.id)
     price_order = sum([value["price"] * value["quantity"] for key, value in products.items()])
     order_id = await repo.order_payment.create_order(tg_id=callback.from_user.id, data=data, products=products,price_order=price_order)
-    content = "\n".join([f'{value["description"]}: {value["quantity"]} шт.' for _, value in products.items()])
+    content = "\n".join([f'{key} - {value["name"]}: {value["quantity"]} шт.' for key, value in products.items()])
     if callback_data.method == "card":
         # await callback.answer("Оплата нахожится в разработке")
         await bot.send_invoice(
@@ -84,7 +84,7 @@ async def process_method_callback(callback: CallbackQuery, callback_data: Method
     else:
         if order_id:
             await repo.order_payment.delete_basket_product_user(tg_id=callback.from_user.id)
-            await bot.send_message(chat_id=settings.bot.admin_id, text=f'Новый заказ №{order_id} от {callback.from_user.first_name}\n\nДата готовности: {data["date"]}\n\nПозиции: {content}\n\n💸 ОБЩАЯ СТОИМОСТЬ: {price_order} RUB\n\n♻️ СТАТУС ОПЛАТЫ: ❌', reply_markup=await ordering_solution(id=order_id, tg_id=callback.from_user.id))
+            await bot.send_message(chat_id=settings.bot.admin_id, text=f'Новый заказ №{order_id} от {callback.from_user.first_name}\n\nДата готовности: {data["date"]}\n\nПозиции: \n{content}\n\n💸 ОБЩАЯ СТОИМОСТЬ: {price_order} RUB\n\n♻️ СТАТУС ОПЛАТЫ: ❌', reply_markup=await ordering_solution(id=order_id, tg_id=callback.from_user.id))
             await callback.message.answer("✅ Ваш заказ успешно оформлен, ожидайте подтверждение администратора!", reply_markup= await menu())
         else:
             await callback.message.answer("Произошла ошибка при оформлении заказа!\n\nГлавное меню - /start")
@@ -104,8 +104,8 @@ async def process_pay(message: Message, bot: Bot, repo: RequestsRepo):
         id = message.successful_payment.invoice_payload.split('_')[-1]
         await repo.order_payment.update_status_order(tg_id=message.from_user.id, id=id)
         order = await repo.order_payment.get_order_user(id=id)
-        content = "\n".join([f'{value["description"]}: {value["quantity"]} шт.' for _, value in order.order.items()])
-        await bot.send_message(chat_id=settings.bot.admin_id, text=f'Новый заказ №{id} от {message.from_user.first_name}\n\nДата готовности: {order.data_time}\n\nПозиции: {content}\n\n💸 ОБЩАЯ СТОИМОСТЬ: {order.price} RUB\n\n♻️ СТАТУС ОПЛАТЫ: ✅', reply_markup=await ordering_solution(id=id, tg_id=message.from_user.id))
+        content = "\n".join([f'{key} - {value["name"]}: {value["quantity"]} шт.' for key, value in order.order.items()])
+        await bot.send_message(chat_id=settings.bot.admin_id, text=f'Новый заказ №{id} от {message.from_user.first_name}\n\nДата готовности: {order.data_time}\n\nПозиции: \n{content}\n\n💸 ОБЩАЯ СТОИМОСТЬ: {order.price} RUB\n\n♻️ СТАТУС ОПЛАТЫ: ✅', reply_markup=await ordering_solution(id=id, tg_id=message.from_user.id))
         await message.answer("✅ Ваш заказ успешно оформлен и оплачен, ожидайте подтверждение администратора!", reply_markup= await menu())
         await repo.session.commit()
 

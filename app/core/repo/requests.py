@@ -7,6 +7,7 @@ from app.core.repo.query.order_payment import OrderPaymentRepo
 from app.core.repo.query.user import UserRepo
 from app.core.repo.query.admin import AdminRepo
 from app.core.repo.query.basket import BasketUserRepo
+from app.core.repo.query.user_order import UserOrderUserRepo
 
 
 @dataclass
@@ -38,8 +39,14 @@ class RequestsRepo:
         
         return BasketUserRepo(self.session)
     
+    
     @property
     def order_payment(self) -> OrderPaymentRepo:
 
         return OrderPaymentRepo(self.session)
    
+
+    @property
+    def user_order(self) -> UserOrderUserRepo:
+
+        return UserOrderUserRepo(self.session)

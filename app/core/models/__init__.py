@@ -5,7 +5,7 @@ __all__ = (
     "Cart",
     "CartItem",
     "Orders",
-    "Collecting_cake"
+    # "Collecting_cake"
 )
 
 from .user import User
@@ -14,4 +14,4 @@ from .product import Product
 from .cart import Cart
 from .cartitem import CartItem
 from .orders import Orders
-from .collecting_cake import Collecting_cake
+# from .collecting_cake import Collecting_cake

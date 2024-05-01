@@ -8,7 +8,7 @@ from app.core.models.cartitem import CartItem
 from app.core.models.categories import Categories
 from app.core.models.product import Product
 from app.core.models.orders import Orders
-from app.core.models.collecting_cake import Collecting_cake
+# from app.core.models.collecting_cake import Collecting_cake
 
 from app.core.session import create_engine_db
 from app.config_loader import settings
@@ -29,7 +29,7 @@ async def root(response: Response):
 
 class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.tg_id, User.username, User.phone]
-    column_details_exclude_list = [User.cart_user, User.order_rel, User.collecting_rel]
+    column_details_exclude_list = [User.cart_user, User.order_rel]
     can_delete = False
     name = "Пользователь"
     name_plural = "Пользователи"

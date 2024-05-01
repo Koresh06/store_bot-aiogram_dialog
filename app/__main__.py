@@ -5,8 +5,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram_dialog import setup_dialogs
-from fastapi import FastAPI
-from app.adminpanel.views import UserAdmin
 from app.core.session import create_engine_db, create_sessionmaker
 from app.tgbot.middlewares.db_session import DbSessionMiddleware
 
