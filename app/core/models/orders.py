@@ -22,12 +22,14 @@ class Orders(Base):
     price: Mapped[float] = mapped_column(Float())
     method: Mapped[str] = mapped_column(String(32))
     status: Mapped[bool] = mapped_column(default=False)
+    readiness: Mapped[bool] = mapped_column(default=False)
 
     user_rel: Mapped['User'] = relationship(back_populates='order_rel')
     cart_rel: Mapped['Cart'] = relationship(back_populates='order_rel')
 
+
     def __repr__(self) -> str:
-        return f"Orders(id={self.id!r}, user_id={self.user_id!r}, cart_id={self.cart_id!r}, data_time={self.data_time!r}, order={self.order!r}, price={self.price!r})"
+        return f"Orders(id={self.id!r}, user_id={self.user_id!r}, cart_id={self.cart_id!r}, data_time={self.data_time!r}, order={self.order!r}, price={self.price!r}), method={self.method!r}, status={self.status!r}, readiness={self.readiness!r})"
     
     # def __str__(self):
     #     return str(self)
