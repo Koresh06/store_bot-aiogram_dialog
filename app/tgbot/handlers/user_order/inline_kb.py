@@ -23,7 +23,7 @@ async def user_order_delete(id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     cb1 = UserOrderDeleteFilter(id=id)
     builder.row(
-        InlineKeyboardButton(text="Отменить", callback_data=cb1.pack()),
+        InlineKeyboardButton(text="❌ Отменить", callback_data=cb1.pack()),
         InlineKeyboardButton(text="⬅️ Назад", callback_data="orders"),
         width=1
     )

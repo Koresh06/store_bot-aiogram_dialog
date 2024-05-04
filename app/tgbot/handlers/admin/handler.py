@@ -24,6 +24,17 @@ async def panel_addmin(message: Message) -> None:
 @admin_router.message(Command('admin'))
 async def panel_admin(message: Message) -> None:
     await message.answer('Панель администратора', reply_markup=await admin_menu())
+    
+
+@admin_router.callback_query(F.data == 'admin_menu')
+async def panel_admin(callback: CallbackQuery) -> None:
+    await callback.message.edit_text('Панель администратора', reply_markup=await admin_menu())
+
+
+@admin_router.callback_query(F.data == 'users')
+async def users(callback: CallbackQuery, repo: RequestsRepo) -> None:
+    users = await repo.admin.get_all_users()
+    await callback.message.edit_text('Пользователи', reply_markup=await users_name(params=users))
 
 
 @admin_router.callback_query(F.data == 'add_position')
@@ -57,3 +68,33 @@ async def cmd_admin_confirme(callback: CallbackQuery, bot: Bot, callback_data: A
         await callback.answer('Отзыв отклонен!', show_alert=True, reply_markup=await menu())
         await callback.answer()
     await callback.message.delete()
+
+
+@admin_router.callback_query(F.data == 'admin_orders')
+async def admin_orders_list(callback: CallbackQuery, repo: RequestsRepo):
+    orders = await repo.admin.get_all_orders()
+    if orders:
+        await callback.message.edit_text(text="Заказы в работе: ", reply_markup=await admin_orders_inline_kb(params=orders))
+        await repo.session.commit()
+    else:
+        await callback.answer(text="Пусто!", show_alert=True)
+
+
+@admin_router.callback_query(AdminOrdersUsersFilter.filter())
+async def check_order_user_adminpanel(callback: CallbackQuery, callback_data: AdminOrdersUsersFilter, repo: RequestsRepo):
+    order: Orders = await repo.admin.get_one_order_user(id=callback_data.id)
+    tg_id = await repo.admin.get_tg_id(user_id=order.user_id)
+    content = "\n".join([f'{key} - {value["name"]}: {value["quantity"]} шт.' for key, value in order.order.items()])
+    await callback.message.edit_text(text=f"Заказ №{callback_data.id}:\n\nДата готовности: {order.data_time}\n\nПозиции: \n{content}\n\n💸 Общая стоимость: {order.price} RUB\n\n♻️ СТАТУС ОПЛАТЫ: {'✅' if order.method == 'cash' else '❌'}", reply_markup=await admin_action_order(id=callback_data.id, tg_id=tg_id))
+
+
+@admin_router.callback_query(ActionAdminOrdrsUser.filter())
+async def action_order_adminpanel(callback: CallbackQuery, callback_data: ActionAdminOrdrsUser, repo: RequestsRepo, bot: Bot):
+    if callback_data.action == ActionOrderAdmin.CONFIRM:
+        await repo.admin.update_readinnes(id=callback_data.id)
+        await bot.send_message(chat_id=callback_data.tg_id, text=f"Ваш заказ #{callback_data.id} готов!")
+    else:
+        await repo.admin.delete_order_user(id=callback_data.id)
+        await bot.send_message(chat_id=callback_data.tg_id, text=f"Ваш заказ #{callback_data.id} отклонен администратором!")
+    await callback.message.edit_text('Панель администратора', reply_markup=await admin_menu())
+    await repo.session.commit()

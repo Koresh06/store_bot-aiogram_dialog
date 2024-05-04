@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 
 from app.core.models.categories import Categories
 from app.core.models.orders import Orders
@@ -10,6 +10,10 @@ from app.core.repo.base import BaseRepo
 
 
 class AdminRepo(BaseRepo):
+
+    async def get_all_users(self):
+        stmt = await self.session.scalars(select(User))
+        return stmt
 
     async def get_categories(self) -> Optional[Categories]:
         categories = await self.session.scalars(select(Categories))
@@ -42,3 +46,33 @@ class AdminRepo(BaseRepo):
         stmt = await self.session.scalar(select(Orders).where(Orders.id == id))
         await self.session.delete(stmt)
         return True
+    
+
+    async def get_all_orders(self):
+        stmt = await self.session.scalars(select(Orders).where(Orders.readiness == False))
+
+        result = {}
+        for num, item in enumerate(stmt, start=1):
+            result[num] = item
+
+        if result != {}:
+            return result
+        return False   
+    
+
+    async def get_one_order_user(self, id: int) -> Optional[dict]:
+        stmt = await self.session.scalar(select(Orders).where(Orders.id == id))
+        return stmt
+    
+
+    async def update_readinnes(self, id: int):
+        await self.session.execute(update(Orders).where(Orders.id == id).values(readiness=True))
+
+    
+    async def get_tg_id(self, user_id: int):
+        tg_id = await self.session.scalar(select(User.tg_id).where(User.id == user_id))
+        return tg_id
+    
+
+    async def delete_order_user(self, id: int):
+        await self.session.execute(delete(Orders).where(Orders.id == id))

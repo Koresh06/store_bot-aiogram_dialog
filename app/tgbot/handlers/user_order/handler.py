@@ -13,8 +13,11 @@ user_order_router = Router()
 @user_order_router.callback_query(F.data == 'orders')
 async def user_orders(callback: CallbackQuery, repo: RequestsRepo):
     orders = await repo.user_order.get_user_orders(tg_id=callback.from_user.id)
-    await callback.message.edit_text(text="Ваши заказы: ", reply_markup=await user_order_inline_kb(params=orders))
-    await repo.session.commit()
+    if orders:
+        await callback.message.edit_text(text="Ваши заказы: ", reply_markup=await user_order_inline_kb(params=orders))
+        await repo.session.commit()
+    else:
+        await callback.answer(text="У вас нет заказов")
 
 
 @user_order_router.callback_query(UserOrderListNameFilter.filter())
