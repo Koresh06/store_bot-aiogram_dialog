@@ -1,6 +1,6 @@
 from typing import Any
 from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import DialogManager, ShowMode, StartMode
+from aiogram_dialog import DialogManager, ShowMode
 from aiogram_dialog.widgets.kbd import Button, Select
 from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
 from app.core.repo.requests import RequestsRepo

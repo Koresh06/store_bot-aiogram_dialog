@@ -6,7 +6,6 @@ from app.core.models.base import Base
 
 
 if TYPE_CHECKING:
-    from app.core.models.user import User
     from app.core.models.product import Product
     from app.core.models.cart import Cart
 

@@ -1,13 +1,9 @@
 from typing import Optional
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select
 
 from app.core.models.user import User
-from app.core.models.product import Product
 from app.core.models.orders import Orders
-from app.core.models.cartitem import CartItem
-from app.core.models.cart import Cart
-from app.core.models.categories import Categories
 from app.core.repo.base import BaseRepo
 
 

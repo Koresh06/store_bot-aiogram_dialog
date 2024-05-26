@@ -1,19 +1,14 @@
-from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Const, Format, Multi, Jinja
-from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.media import StaticMedia
 from aiogram_dialog.widgets.kbd import (
     Back,
     Button,
-    Cancel,
     Next,
     Row,
     Select,
-    Group,
-    SwitchTo
+    Group
 )
-from app.tgbot.dialogs.admin.callbacks import close_dialog
 
 from app.tgbot.dialogs.user.callbacks import add_product_cart, start_categories_user
 from app.tgbot.dialogs.admin.getters import get_name_categories

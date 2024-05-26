@@ -8,8 +8,19 @@ from app.config_loader import settings
 from app.core.repo.requests import RequestsRepo
 from app.tgbot.fsm.state import OrderPlacement
 from app.tgbot.handlers.users.inline_kb import menu
-from .inline_kb import *
-from .filter_kb import *
+from .inline_kb import (
+    generate_calendar_markup,
+    method_paymant,
+    ordering_solution,
+
+)
+from .filter_kb import (
+    CalendarCbData,
+    DayCalendarCbData,
+    OrderingSolutionCbDate,
+    ActionsSolutionCbData,
+    MethodPaymantCbData,
+)
 
 
 order_placement = Router()
@@ -41,7 +52,7 @@ async def process_calendar_callback(callback: CallbackQuery, callback_data: Cale
 
 @order_placement.callback_query(DayCalendarCbData.filter(), StateFilter(OrderPlacement.date))
 async def process_day_callback(callback: CallbackQuery, callback_data: DayCalendarCbData, state: FSMContext):
-    if not "🔒" in callback_data.day and callback_data.day != " ":
+    if "🔒" not in callback_data.day and callback_data.day != " ":
         print(callback_data)
         year, month, day = callback_data.year, callback_data.month, callback_data.day
         selected_date = f"{day}.{month}.{year}"

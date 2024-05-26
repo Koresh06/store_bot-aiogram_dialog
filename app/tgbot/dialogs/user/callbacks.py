@@ -1,9 +1,6 @@
-from typing import Any
-from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import DialogManager, ShowMode, StartMode
+from aiogram.types import CallbackQuery
+from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button, Select
-from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
-from app.core.repo.requests import RequestsRepo
 from app.tgbot.dialogs.user import state
 
 

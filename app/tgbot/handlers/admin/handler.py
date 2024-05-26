@@ -2,11 +2,18 @@ from aiogram.types import Message, CallbackQuery
 from aiogram import F, Router, Bot
 from aiogram.filters import Command
 from aiogram_dialog import DialogManager, StartMode
+from app.core.models.orders import Orders
 from app.tgbot.dialogs.admin import state
 
 from app.config_loader import settings
 from app.core.repo.requests import RequestsRepo
-from app.tgbot.handlers.admin.inline_kb import *
+from app.tgbot.handlers.admin.filter_kb import ActionAdminOrdrsUser, ActionOrderAdmin, AdminOrdersUsersFilter
+from app.tgbot.handlers.admin.inline_kb import (
+    admin_action_order,
+    admin_menu,
+    admin_orders_inline_kb,
+    users_name,
+)
 from app.tgbot.handlers.order_placement.filter_kb import ActionsSolutionCbData, OrderingSolutionCbDate
 from app.tgbot.handlers.users.filter_kb import AdminConfirmFeetback
 from app.tgbot.handlers.users.inline_kb import menu
@@ -17,17 +24,17 @@ admin_router = Router()
 
 @admin_router.message(Command('addmin'))
 async def panel_addmin(message: Message) -> None:
-    await message.answer(f"Панель администратора\n\n http://127.0.0.1:8000/admin")
+    await message.answer("Панель администратора\n\nhttp://127.0.0.1:8000/admin")
     
 
 
 @admin_router.message(Command('admin'))
-async def panel_admin(message: Message) -> None:
+async def panel_admin_cmd(message: Message) -> None:
     await message.answer('Панель администратора', reply_markup=await admin_menu())
     
 
 @admin_router.callback_query(F.data == 'admin_menu')
-async def panel_admin(callback: CallbackQuery) -> None:
+async def panel_admin_inline(callback: CallbackQuery) -> None:
     await callback.message.edit_text('Панель администратора', reply_markup=await admin_menu())
 
 

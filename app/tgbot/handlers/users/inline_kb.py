@@ -1,10 +1,14 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from app.core.models.product import Product
 from app.core.models.categories import Categories
 from app.config_loader import settings
-from .filter_kb import *
+from .filter_kb import (
+    AdminConfirmFeetback,
+    ConfirFeetback, 
+    ActionConfirm, 
+    CategoryCbData,
+) 
 
 
 async def menu() -> InlineKeyboardBuilder:

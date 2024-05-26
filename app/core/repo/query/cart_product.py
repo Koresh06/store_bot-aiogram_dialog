@@ -1,4 +1,3 @@
-from typing import Optional
 
 from sqlalchemy import delete, select, update
 
@@ -6,7 +5,6 @@ from app.core.models.user import User
 from app.core.models.product import Product
 from app.core.models.cartitem import CartItem
 from app.core.models.cart import Cart
-from app.core.models.categories import Categories
 from app.core.repo.base import BaseRepo
 
 
@@ -26,9 +24,7 @@ class CartProductRepo(BaseRepo):
     
 
     async def add_cart_user_product(self, tg_id: int, id: int) -> CartItem:
-        user = await self.session.scalar(select(User).where(User.tg_id == tg_id))
         cart_d = await self.session.scalar(select(Cart).where(Cart.user_id == tg_id))
-        print(cart_d)
         check_cartitem = await self.session.scalar(select(CartItem).where(CartItem.cart_id == cart_d.id, CartItem.product_id == id))
         if not check_cartitem:
             self.session.add(CartItem(cart_id=cart_d.id, product_id=id))
@@ -44,7 +40,7 @@ class CartProductRepo(BaseRepo):
 
     async def minus_quantity_product(self, tg_id: int, id: int):
         user_d = await self.session.scalar(select(User).where(User.tg_id == tg_id))
-        cart_d = await self.session.scalar(select(Cart).where(Cart.user_id == user_d.id))
+        cart_d = await self.session.scalar(select(Cart).where(Cart.id == user_d.id))
         quantuti = await self.session.scalar(select(CartItem).where(CartItem.product_id == id, CartItem.cart_id == cart_d.id))
 
         if quantuti.quantuty > 1:
@@ -55,7 +51,7 @@ class CartProductRepo(BaseRepo):
 
     async def cmd_plus_cartitem_user(self, tg_id: int, id: int):
         user_d = await self.session.scalar(select(User).where(User.tg_id == tg_id))
-        cart_d = await self.session.scalar(select(Cart).where(Cart.user_id == user_d.id))
+        cart_d = await self.session.scalar(select(Cart).where(Cart.id == user_d.id))
         quantuti = await self.session.scalar(select(CartItem).where(CartItem.product_id == id, CartItem.cart_id == cart_d.id))
 
         if quantuti.quantuty >= 5:
@@ -67,7 +63,7 @@ class CartProductRepo(BaseRepo):
 
     async def delete_product_cart(self, tg_id: int, id: int):
         user_d = await self.session.scalar(select(User).where(User.tg_id == tg_id))
-        cart_d = await self.session.scalar(select(Cart).where(Cart.user_id == user_d.id))
+        cart_d = await self.session.scalar(select(Cart).where(Cart.id == user_d.id))
         await self.session.execute(delete(CartItem).where(CartItem.product_id == id, CartItem.cart_id == cart_d.id))
 
 

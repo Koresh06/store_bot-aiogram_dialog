@@ -10,8 +10,7 @@ from aiogram_dialog.widgets.kbd import (
     Next,
     Row,
     Select,
-    Group,
-    SwitchTo
+    Group
 )
 from app.tgbot.dialogs.admin import state
 from app.tgbot.dialogs.admin.callbacks import close_dialog, confirm_product, entered_name_categories, process_photo,  start_get_categories

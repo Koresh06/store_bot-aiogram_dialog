@@ -1,9 +1,15 @@
 import calendar
 import datetime
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton
 
-from .filter_kb import *
+from .filter_kb import (
+    CalendarCbData,
+    DayCalendarCbData,
+    MethodPaymantCbData,
+    OrderingSolutionCbDate,
+    ActionsSolutionCbData,
+)
 
 
 async def generate_calendar_markup(year, month, current_date):

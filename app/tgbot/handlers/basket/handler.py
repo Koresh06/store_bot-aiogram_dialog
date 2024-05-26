@@ -1,11 +1,15 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, FSInputFile
-from aiogram.types.input_media_photo import InputMediaPhoto
+from aiogram.types import CallbackQuery
 
 from app.core.repo.requests import RequestsRepo
 from app.tgbot.handlers.users.inline_kb import menu
-from .inline_kb import *
-from .filter_kb import *
+from .inline_kb import (
+    bascket_user_menu, 
+)
+from .filter_kb import (
+    DeleteProductBasketUserCbData,
+    EmptyBasketUserCbData,
+)
 
 
 basket_router = Router()
@@ -20,7 +24,7 @@ async def cmd_user_basket(callback: CallbackQuery, repo: RequestsRepo):
         prices = sum([value['quantity'] * value['price'] for key, value in data.items()])
         await callback.message.answer(text=f"🛒 Ваша корзина:\n\n{params}\n\n💸 ИТОГО: {prices} RUB" ,reply_markup=await bascket_user_menu(tg_id=callback.from_user.id, data=data))
     else:
-        await callback.answer(text=f"Ваша корзина пуста", show_alert=True)
+        await callback.answer(text="Ваша корзина пуста", show_alert=True)
 
     
 @basket_router.callback_query(DeleteProductBasketUserCbData.filter())
@@ -32,7 +36,7 @@ async def cmd_delete_product_basket(callback: CallbackQuery, callback_data: Dele
             prices = sum([value['quantity'] * value['price'] for key, value in data.items()])
             await callback.message.edit_text(text=f"🛒 Ваша корзина:\n\n{params}\n\n💸 ИТОГО: {prices} RUB" ,reply_markup=await  bascket_user_menu(tg_id=callback.from_user.id, data=data))
         else:
-            await callback.answer(text=f"Ваша корзина пуста", show_alert=True)
+            await callback.answer(text="Ваша корзина пуста", show_alert=True)
             await callback.message.delete()
             await callback.message.answer('Магазин бот изготовлению тортов на заказ, выберете пункт меню или воспользуйтесь командой /help', reply_markup=await menu())
     else:

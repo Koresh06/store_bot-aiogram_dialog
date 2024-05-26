@@ -3,15 +3,24 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-# from aiogram_dialog import DialogManager, StartMode
 
 from app.core.repo.requests import RequestsRepo
 from app.tgbot.fsm.state import Feetback, RegisterUser
-from app.tgbot.handlers.users.inline_kb import *
-from app.tgbot.handlers.users.filter_kb import *
+from app.tgbot.handlers.users.inline_kb import (
+    admin_confirm_feetback,
+    categories_menu,
+    feedback_kb,
+    menu,
+    confirm_feetback,
+    new_user,
+    back_menu,
+    kb_help,
+)
+from app.tgbot.handlers.users.filter_kb import (
+    ConfirFeetback,
+)
 from app.config_loader import settings
 
-# from app.tgbot.dialogs.user.state import Catalog
 
 
 user_router = Router()

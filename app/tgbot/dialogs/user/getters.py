@@ -1,6 +1,4 @@
-import asyncio
 from aiogram_dialog import DialogManager
-from aiogram_dialog.widgets.input import TextInput
 
 from app.core.repo.requests import RequestsRepo
 

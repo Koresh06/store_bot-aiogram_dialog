@@ -1,7 +1,10 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton
 
-from .filter_kb import *
+from .filter_kb import (
+    DeleteProductBasketUserCbData,
+    EmptyBasketUserCbData,
+)
 
 
 async def bascket_user_menu(tg_id: int, data: dict):

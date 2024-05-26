@@ -7,7 +7,6 @@ from app.core.models.base import Base
 if TYPE_CHECKING:
     from app.core.models.orders import Orders
     from app.core.models.cart import Cart
-    from app.core.models.cartitem import CartItem
     # from app.core.models.collecting_cake import Collecting_cake
 
 

@@ -1,9 +1,16 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
+from app.core.models.orders import Orders
 
 from app.core.repo.requests import RequestsRepo
-from app.tgbot.handlers.user_order.inline_kb import *
-from app.tgbot.handlers.user_order.filter import *
+from app.tgbot.handlers.user_order.inline_kb import (
+    user_order_delete,
+    user_order_inline_kb,
+)
+from app.tgbot.handlers.user_order.filter import (
+    UserOrderListNameFilter,
+    UserOrderDeleteFilter,
+)
 
 
 

@@ -49,7 +49,7 @@ class AdminRepo(BaseRepo):
     
 
     async def get_all_orders(self):
-        stmt = await self.session.scalars(select(Orders).where(Orders.readiness == False))
+        stmt = await self.session.scalars(select(Orders).where(not Orders.readiness))
 
         result = {}
         for num, item in enumerate(stmt, start=1):

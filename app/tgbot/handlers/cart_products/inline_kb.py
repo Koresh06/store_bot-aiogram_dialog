@@ -1,10 +1,18 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton
 
 from app.core.models.categories import Categories
 
-from .filter_kb import *
-from ..users.filter_kb import CategoryCbData
+from .filter_kb import (
+    CountProductsCbData,
+    MenuProductsCbData,
+    PaginationProductCbData,
+    PagitationAction,
+    ParamsProductCbData,
+    ProductAction,
+    QuantityAction,
+    QuantutyProductCbData,
+)
 
 
 
